@@ -14,7 +14,9 @@ const count = Math.max(heroSlides.desktop.length, heroSlides.mobile.length);
       Array.from({ length: count }, (_, i) => (
         <div
           class:list={['hero__slide', { 'is-active': i === 0 }]}
-          style={`--desktop: url('${heroSlides.desktop[i % heroSlides.desktop.length]}'); --mobile: url('${heroSlides.mobile[i % heroSlides.mobile.length]}')`}
+          style={i === 0 ? `--desktop: url('${heroSlides.desktop[0]}'); --mobile: url('${heroSlides.mobile[0]}')` : undefined}
+          data-desktop={heroSlides.desktop[i % heroSlides.desktop.length]}
+          data-mobile={heroSlides.mobile[i % heroSlides.mobile.length]}
         />
       ))
     }
@@ -37,11 +39,20 @@ const count = Math.max(heroSlides.desktop.length, heroSlides.mobile.length);
     const slides = [...hero.querySelectorAll<HTMLElement>('.hero__slide')];
     const seconds = parseFloat(getComputedStyle(hero).getPropertyValue('--interval')) || 6;
     if (slides.length < 2 || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    // Images load one slide ahead (only the first is in the HTML), so the
+    // page doesn't download all seven photos up front.
+    const load = (slide: HTMLElement) => {
+      if (slide.style.getPropertyValue('--desktop')) return;
+      slide.style.setProperty('--desktop', `url('${slide.dataset.desktop}')`);
+      slide.style.setProperty('--mobile', `url('${slide.dataset.mobile}')`);
+    };
     let index = 0;
+    window.setTimeout(() => load(slides[1]), 1500);
     window.setInterval(() => {
       slides[index].classList.remove('is-active');
       index = (index + 1) % slides.length;
       slides[index].classList.add('is-active');
+      load(slides[(index + 1) % slides.length]);
     }, seconds * 1000);
   });
 </script>

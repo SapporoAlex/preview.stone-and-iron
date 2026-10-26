@@ -40,7 +40,8 @@ const { slides, label, height = 'md', captions = false, interval = 5000 } = Astr
           role="group"
           aria-roledescription="slide"
           aria-label={`${i + 1} / ${slides.length}`}
-          style={`background-image: url('${slide.image}')`}
+          style={i === 0 ? `background-image: url('${slide.image}')` : undefined}
+          data-bg={slide.image}
         >
           {captions && (
             <div class="carousel__caption">
@@ -86,8 +87,16 @@ const { slides, label, height = 'md', captions = false, interval = 5000 } = Astr
     let index = 0;
     let timer: number | undefined;
 
+    // Photos load lazily: only the current slide and its neighbours get their
+    // background image, so a 21-photo carousel doesn't download 21 photos up front.
+    const load = (i: number) => {
+      const slide = slides[(i + slides.length) % slides.length] as HTMLElement | undefined;
+      if (slide?.dataset.bg && !slide.style.backgroundImage) slide.style.backgroundImage = `url('${slide.dataset.bg}')`;
+    };
+
     const go = (i: number) => {
       index = (i + slides.length) % slides.length;
+      [index - 1, index, index + 1].forEach(load);
       if (track) track.style.transform = `translateX(-${index * 100}%)`;
       dots.forEach((d, n) => d.setAttribute('aria-current', String(n === index)));
     };
@@ -117,8 +126,14 @@ const { slides, label, height = 'md', captions = false, interval = 5000 } = Astr
       start();
     });
 
-    go(0);
-    start();
+    // Start (and preload neighbours) only once the carousel is near the viewport.
+    const observer = new IntersectionObserver((entries) => {
+      if (!entries[0].isIntersecting) return;
+      observer.disconnect();
+      go(0);
+      start();
+    }, { rootMargin: '200px' });
+    observer.observe(root);
   });
 </script>
 

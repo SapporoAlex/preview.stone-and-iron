@@ -14,6 +14,7 @@ interface Props {
   showBooking?: boolean; // "BOOK" link in the header (Stay page)
   showFaq?: boolean; // floating FAQ button + popup (Stay, Café Bar)
   showFooter?: boolean; // the home page is a full-screen hero without footer
+  preloadImage?: string; // main image at the top of the page, fetched early for faster loading
 }
 
 const {
@@ -24,6 +25,7 @@ const {
   showBooking = false,
   showFaq = false,
   showFooter = true,
+  preloadImage,
 } = Astro.props;
 const pageTitle = title ? `${title} - ${site.shortName}` : `${site.shortName} ${site.tagline}`;
 const canonical = new URL(Astro.url.pathname, Astro.site);
@@ -48,10 +50,11 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@200;300&family=Crimson+Text&family=Noto+Serif+JP:wght@200;300;400&display=swap"
-    />
+    <!-- Fonts load without blocking the first paint: text shows straight away
+         in a fallback font and swaps when the web font arrives. -->
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@200;300&family=Crimson+Text&family=Noto+Serif+JP:wght@200;300;400&display=swap" onload="this.onload=null;this.rel='stylesheet'" />
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@200;300&family=Crimson+Text&family=Noto+Serif+JP:wght@200;300;400&display=swap" /></noscript>
+    {preloadImage && <link rel="preload" as="image" href={preloadImage} fetchpriority="high" />}
   </head>
   <body class:list={[`theme-${theme}`]}>
     <a class="skip-link" href="#main">コンテンツにスキップ</a>

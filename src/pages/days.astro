@@ -30,7 +30,7 @@ import { daysIntro, dayIntro, timeline } from '@data/days';
       timeline.map((entry) => (
         <li class="timeline__entry" data-reveal="fade-slow">
           <h2 class="timeline__time">{entry.time}</h2>
-          <div class="timeline__image" style={`background-image: url('${entry.image}')`} role="presentation" />
+          <img class="timeline__image" src={entry.image} alt="" loading="lazy" decoding="async" />
           <p class="timeline__text">{entry.text}</p>
         </li>
       ))
@@ -73,10 +73,12 @@ import { daysIntro, dayIntro, timeline } from '@data/days';
       margin-bottom: 1.25rem;
     }
 
+    // Real <img> (not a CSS background) so the browser lazy-loads it.
     &__image {
+      display: block;
+      width: 100%;
       height: clamp(200px, 26vw, 360px);
-      background-size: cover;
-      background-position: center;
+      object-fit: cover;
     }
 
     &__text {

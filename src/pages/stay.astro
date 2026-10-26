@@ -27,6 +27,7 @@ import {
 ---
 
 <BaseLayout
+  preloadImage="/images/stay/slides/01.jpg"
   title="Stay"
   description="築100年の小樽軟石を使った石蔵に泊まる、一棟貸しの宿。最大8名様までご利用いただけます。"
   image="/images/stay/slides/01.jpg"
@@ -37,8 +38,9 @@ import {
 
   <!-- Background video band (muted, looping, like the original) -->
   <div class="video-band" aria-hidden="true">
-    <video autoplay muted loop playsinline preload="metadata" poster="/images/stay/slides/01.jpg">
-      <source src="/video/stay-intro.mp4" type="video/mp4" />
+    <!-- The 7 MB video only starts downloading when scrolled near (see script). -->
+    <video muted loop playsinline preload="none" poster="/images/stay/slides/01.jpg" data-lazy-video>
+      <source data-src="/video/stay-intro.mp4" type="video/mp4" />
     </video>
   </div>
 
@@ -126,6 +128,23 @@ import {
 
   <AccessSection />
 </BaseLayout>
+
+<script>
+  // Load and play the background video only after the page has finished
+  // loading, and only when it is near the viewport (it's 7 MB).
+  const startVideos = () => document.querySelectorAll<HTMLVideoElement>('[data-lazy-video]').forEach((video) => {
+    const observer = new IntersectionObserver((entries) => {
+      if (!entries[0].isIntersecting) return;
+      observer.disconnect();
+      video.querySelectorAll<HTMLSourceElement>('source[data-src]').forEach((s) => (s.src = s.dataset.src!));
+      video.load();
+      if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) video.play().catch(() => {});
+    }, { rootMargin: '300px' });
+    observer.observe(video);
+  });
+  if (document.readyState === 'complete') startVideos();
+  else window.addEventListener('load', () => setTimeout(startVideos, 500), { once: true });
+</script>
 
 <style lang="scss">
   .video-band {

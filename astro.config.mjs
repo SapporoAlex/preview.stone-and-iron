@@ -1,5 +1,6 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
+import sitemap from '@astrojs/sitemap';
 import { fileURLToPath } from 'node:url';
 
 // https://astro.build/config
@@ -10,6 +11,9 @@ export default defineConfig({
   // Plain static HTML output: every page becomes /<slug>/index.html,
   // which any Apache/PHP host serves without extra configuration.
   output: 'static',
+
+  // Generates sitemap-index.xml + sitemap-0.xml on every build (for search engines).
+  integrations: [sitemap()],
   trailingSlash: 'always',
   build: {
     format: 'directory',
