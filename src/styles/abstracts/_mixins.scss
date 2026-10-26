@@ -1,0 +1,151 @@
+@use 'sass:map';
+@use 'variables' as *;
+
+// ==========================================================================
+// Layout helpers
+// ==========================================================================
+
+// Mobile first: @include mq(md) { ... } -> min-width: 768px
+@mixin mq($size) {
+  @media (min-width: map.get($breakpoints, $size)) {
+    @content;
+  }
+}
+
+// @include mq-down(md) { ... } -> max-width: 767px
+@mixin mq-down($size) {
+  @media (max-width: map.get($breakpoints, $size) - 1px) {
+    @content;
+  }
+}
+
+// ==========================================================================
+// Text styles — every text style on the site, measured from the original.
+// Components use these instead of setting fonts by hand.
+// ==========================================================================
+
+// Section label with trailing colon: "Us :", "Stay :", "Access :" (Crimson Pro 28px)
+@mixin text-label($size: 1.75rem) {
+  font-family: $font-label;
+  font-weight: 300;
+  font-size: $size;
+  line-height: 1;
+  letter-spacing: 1.3px;
+}
+
+// Big spaced headline: "Wake up in Otaru's famous Stone House." (Crimson Text 36px)
+@mixin text-headline {
+  font-family: $font-display;
+  font-weight: 300;
+  font-size: clamp(1.5rem, 3.2vw, 2.25rem);
+  line-height: 1.8;
+  letter-spacing: clamp(2px, 0.4vw, 6px);
+}
+
+// Brand name "STONE and IRON" (Crimson Text 37px on the hero, 25px in the footer)
+@mixin text-brand($size: 2.3rem) {
+  font-family: $font-display;
+  font-weight: 400;
+  font-size: $size;
+  line-height: 1.1;
+  letter-spacing: 2.9px;
+}
+
+// "Café Bar and Inn" strapline (Crimson Text 20px light)
+@mixin text-strap($size: 1.25rem) {
+  font-family: $font-display;
+  font-weight: 300;
+  font-size: $size;
+  line-height: 1.5;
+  letter-spacing: 2.6px;
+}
+
+// Japanese body copy (Noto Serif JP 15px, light, very open line height)
+@mixin text-body($size: 0.9375rem) {
+  font-family: $font-body;
+  font-weight: 300;
+  font-size: $size;
+  line-height: 3;
+  letter-spacing: 2.1px;
+}
+
+// Small Japanese caption / list text (Noto Serif JP 14px, normal line height)
+@mixin text-small {
+  font-family: $font-body;
+  font-weight: 300;
+  font-size: 0.875rem;
+  line-height: 1.7;
+  letter-spacing: 2.1px;
+}
+
+// Japanese sub-heading: "一棟貸しの宿", "イベントのお知らせ" (Noto Serif JP 21px)
+@mixin text-subheading($size: 1.3125rem) {
+  font-family: $font-body;
+  font-weight: 300;
+  font-size: $size;
+  line-height: 1.6;
+  letter-spacing: 2.1px;
+}
+
+// Small English heading in lists: "Capacity", "Bedroom" (Crimson Text 23px extra light)
+@mixin text-list-heading {
+  font-family: $font-display;
+  font-weight: 200;
+  font-size: 1.4375rem;
+  line-height: 1;
+  letter-spacing: 1.3px;
+}
+
+// English link text with arrow line: "Café Bar", "A Day in Stone and Iron" (Crimson Text 19px)
+@mixin text-link {
+  font-family: $font-display;
+  font-weight: 300;
+  font-size: 1.1875rem;
+  line-height: 1.5;
+  letter-spacing: 2.6px;
+}
+
+// Timeline time "07:02" (Crimson Text 22px)
+@mixin text-time {
+  font-family: $font-display;
+  font-weight: 300;
+  font-size: 1.375rem;
+  line-height: 1;
+  letter-spacing: 2.6px;
+}
+
+// Buttons ("料金・ご予約はこちら") — Noto Serif JP 16px
+@mixin text-button {
+  font-family: $font-body;
+  font-weight: 300;
+  font-size: 1rem;
+  line-height: 1;
+  letter-spacing: 1.5px;
+}
+
+// ==========================================================================
+// Visual effects
+// ==========================================================================
+
+// Background image that stays put while the page scrolls (Elementor "fixed").
+// iOS ignores fixed backgrounds, so it's desktop only.
+@mixin parallax-bg {
+  background-size: cover;
+  background-position: center;
+
+  @include mq(lg) {
+    background-attachment: fixed;
+  }
+}
+
+@mixin visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

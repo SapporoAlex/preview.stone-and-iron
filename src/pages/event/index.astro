@@ -1,0 +1,62 @@
+---
+// Event list. Events are Markdown files in src/content/events/ (newest first).
+import { getCollection } from 'astro:content';
+import BaseLayout from '@layouts/BaseLayout.astro';
+import EventCard from '@components/cards/EventCard.astro';
+
+const events = (await getCollection('events')).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+---
+
+<BaseLayout title="Event" description="石と鉄：STONE and IRONでは不定期でイベントを開催しております。">
+  <section class="events-intro container container--slim">
+    <h1 class="events-intro__label" data-reveal="fade-slow">Event :</h1>
+    <p class="events-intro__text" data-reveal="fade-slow">
+      石と鉄：STONE and IRONでは不定期でイベントを開催しております！最新情報はインスタグラムでも更新しておりますので、是非フォローをお願いいたします！
+    </p>
+  </section>
+
+  <section class="events container container--wide">
+    <ul class="events__grid" role="list">
+      {
+        events.map((event) => (
+          <li>
+            <EventCard title={event.data.title} image={event.data.image} href={`/event/${event.id}/`} />
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+</BaseLayout>
+
+<style lang="scss">
+  .events-intro {
+    padding-block: calc(#{$header-height} + 2rem) 3rem;
+
+    &__label {
+      @include text-label;
+    }
+
+    &__text {
+      @include text-body(0.875rem);
+      margin-top: 1.5rem;
+    }
+  }
+
+  .events {
+    padding-bottom: $section-space;
+
+    &__grid {
+      display: grid;
+      gap: 2rem;
+      margin: 0;
+
+      @include mq(sm) {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      @include mq(lg) {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+  }
+</style>

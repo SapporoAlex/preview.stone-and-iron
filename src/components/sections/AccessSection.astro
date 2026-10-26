@@ -1,0 +1,68 @@
+---
+// "Access :" block: Google map + nearby spots + travel times.
+// Content comes from src/data/site.ts (access).
+import SectionLabel from '@components/ui/SectionLabel.astro';
+import { access } from '@data/site';
+
+interface Props {
+  topSpace?: 'header' | 'normal';
+}
+
+const { topSpace = 'normal' } = Astro.props;
+---
+
+<section class:list={['access', `access--top-${topSpace}`]}>
+  <div class="container container--wide">
+    <SectionLabel text="Access :" />
+    <div class="access__map" data-reveal="fade-slow">
+      <iframe
+        src={access.mapEmbed}
+        title="石と鉄 STONE and IRON の地図"
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade"
+        allowfullscreen></iframe>
+    </div>
+    <div class="access__text" data-reveal="fade-slow">
+      <p>{access.intro}</p>
+      <ul class="access__routes" role="list">
+        {access.routes.map((route) => <li>{route}</li>)}
+      </ul>
+    </div>
+  </div>
+</section>
+
+<style lang="scss">
+  .access {
+    padding-block: $section-space;
+
+    &--top-header {
+      padding-top: calc(#{$header-height} + 1rem);
+    }
+
+    // Fixed responsive height (not aspect-ratio + min-height, which would
+    // force the box wider than a phone screen).
+    &__map {
+      width: 100%;
+      height: clamp(260px, 30vw, 350px);
+      background: $color-grey-light;
+
+      iframe {
+        display: block;
+        width: 100%;
+        height: 100%;
+        border: 0;
+        filter: grayscale(30%);
+      }
+    }
+
+    &__text {
+      @include text-body(1rem);
+      margin-top: 1.5rem;
+      line-height: 2;
+    }
+
+    &__routes {
+      margin: 1.5rem 0 0;
+    }
+  }
+</style>

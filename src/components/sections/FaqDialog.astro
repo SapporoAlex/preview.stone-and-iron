@@ -1,0 +1,160 @@
+---
+// Floating gold chat button (bottom right) that opens the FAQ popup.
+// Uses the native <dialog> element: focus is trapped, Escape closes it,
+// and clicking the dark backdrop closes it too. Content: src/data/site.ts (faq).
+import Accordion from '@components/ui/Accordion.astro';
+import Button from '@components/ui/Button.astro';
+import { faq, site } from '@data/site';
+---
+
+<button class="faq-fab" type="button" aria-haspopup="dialog" data-faq-open>
+  <span class="visually-hidden">{faq.subtitle}</span>
+  <svg viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M4 3h16a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H8.5L4 21.5V18a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zm0 2v11h2v1.4L7.8 16H20V5H4z" />
+  </svg>
+</button>
+
+<dialog class="faq-dialog" aria-labelledby="faq-title" data-faq-dialog>
+  <div class="faq-dialog__panel">
+    <button class="faq-dialog__close" type="button" data-faq-close>
+      <span class="visually-hidden">閉じる</span>
+    </button>
+    <h2 class="faq-dialog__title" id="faq-title">{faq.title}</h2>
+    <p class="faq-dialog__subtitle">{faq.subtitle}</p>
+    <Accordion items={faq.items} />
+    <div class="faq-dialog__actions">
+      <Button href="/contact/" variant="outline">お問い合わせ</Button>
+      <Button href={site.links.bookingCom} variant="outline" external>ご予約</Button>
+    </div>
+  </div>
+</dialog>
+
+<script>
+  const dialog = document.querySelector<HTMLDialogElement>('[data-faq-dialog]');
+  document.querySelector('[data-faq-open]')?.addEventListener('click', () => dialog?.showModal());
+  document.querySelector('[data-faq-close]')?.addEventListener('click', () => dialog?.close());
+  // A click on the backdrop (outside the panel) closes the dialog.
+  dialog?.addEventListener('click', (e) => {
+    if (e.target === dialog) dialog.close();
+  });
+</script>
+
+<style lang="scss">
+  .faq-fab {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    z-index: 90;
+    width: 56px;
+    height: 56px;
+    padding: 10px;
+    background: none;
+    border: 0;
+    color: $color-gold;
+    transition: color $transition-base, transform $transition-base;
+
+    svg {
+      width: 36px;
+      height: 36px;
+      fill: currentColor;
+    }
+
+    &:hover,
+    &:focus-visible {
+      color: $color-black;
+      transform: translateY(-2px);
+    }
+  }
+
+  // Dark Café Bar page: the black hover would disappear, so use white.
+  :global(.theme-dark) .faq-fab:hover {
+    color: $color-white;
+  }
+
+  .faq-dialog {
+    width: min(560px, calc(100% - 2rem));
+    max-height: calc(100% - 2rem);
+    padding: 0;
+    border: 0;
+    background: $color-white;
+    color: $color-black;
+
+    &::backdrop {
+      background: rgba($color-black, 0.6);
+    }
+
+    // Fade + rise in when opened.
+    &[open] {
+      animation: faq-in 0.35s $ease-out;
+    }
+
+    &__panel {
+      position: relative;
+      padding: 2.5rem clamp(1.25rem, 5vw, 2.5rem) 2rem;
+    }
+
+    &__close {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 52px;
+      height: 52px;
+      padding: 0;
+      border: 0;
+      background: $color-gold;
+      color: $color-white;
+      transition: background $transition-base, color $transition-base;
+
+      &::before,
+      &::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 22px;
+        height: 2px;
+        background: currentColor;
+        transform: translate(-50%, -50%) rotate(45deg);
+      }
+
+      &::after {
+        transform: translate(-50%, -50%) rotate(-45deg);
+      }
+
+      &:hover,
+      &:focus-visible {
+        background: $color-white;
+        color: $color-gold;
+      }
+    }
+
+    &__title {
+      font-family: $font-display;
+      font-size: 1.6875rem; // 27px
+      letter-spacing: 2px;
+    }
+
+    &__subtitle {
+      margin: 0.5rem 0 1.25rem;
+      font-family: $font-body;
+      font-weight: 300;
+      font-size: 1rem;
+      letter-spacing: 2px;
+    }
+
+    &__actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+  }
+
+  @keyframes faq-in {
+    from {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+  }
+</style>

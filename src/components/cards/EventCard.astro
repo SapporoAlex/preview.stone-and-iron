@@ -1,0 +1,81 @@
+---
+// Event card: square photo, title and "More →" link, on a white card with
+// a soft shadow (as on the original).
+interface Props {
+  title: string;
+  image: string;
+  href: string;
+  size?: 'sm' | 'lg'; // lg = the big card in "Current Event"
+}
+
+const { title, image, href, size = 'sm' } = Astro.props;
+---
+
+<article class:list={['event-card', `event-card--${size}`]} data-reveal="fade-slow">
+  <a class="event-card__media" href={href} tabindex="-1" aria-hidden="true">
+    <img src={image} alt="" loading="lazy" />
+  </a>
+  <div class="event-card__body">
+    <h3 class="event-card__title"><a href={href}>{title}</a></h3>
+    <a class="event-card__more" href={href}>More →</a>
+  </div>
+</article>
+
+<style lang="scss">
+  .event-card {
+    background: $color-white;
+    box-shadow: $shadow-card;
+    color: $color-black;
+
+    &__media {
+      display: block;
+      aspect-ratio: 1;
+      overflow: hidden;
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.6s $ease-out;
+      }
+    }
+
+    &--lg &__media {
+      aspect-ratio: 781 / 320;
+    }
+
+    &:hover &__media img {
+      transform: scale(1.04);
+    }
+
+    &__body {
+      padding: 1.5rem 1.75rem 1.75rem;
+    }
+
+    &__title {
+      @include text-subheading(1.1875rem);
+      font-weight: 400;
+
+      a:hover {
+        color: $color-gold;
+      }
+    }
+
+    &--lg &__title {
+      font-size: clamp(1.1rem, 2vw, 1.375rem);
+    }
+
+    &__more {
+      display: inline-block;
+      margin-top: 0.75rem;
+      font-family: $font-display;
+      font-size: 0.875rem;
+      letter-spacing: 2.8px;
+      text-transform: uppercase;
+
+      &:hover {
+        color: $color-gold;
+      }
+    }
+  }
+</style>

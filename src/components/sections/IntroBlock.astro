@@ -1,0 +1,65 @@
+---
+// Left-aligned intro used at the top of Stay / Days and for the About
+// features: small label, big spaced headline, short Japanese text, and an
+// optional arrow link.
+//
+// <IntroBlock label="Days :" headline={"A DAY IN\nSTONE AND IRON"} text={[...]} />
+import ArrowLink from '@components/ui/ArrowLink.astro';
+
+interface Props {
+  label: string;
+  headline: string; // use \n for line breaks
+  text?: string[];
+  link?: { label: string; href: string };
+  width?: 'slim' | 'narrow';
+  topSpace?: 'header' | 'normal'; // 'header' leaves room under the fixed header
+}
+
+const { label, headline, text = [], link, width = 'slim', topSpace = 'normal' } = Astro.props;
+---
+
+<section class:list={['intro-block', `intro-block--top-${topSpace}`]}>
+  <div class:list={['container', `container--${width}`]}>
+    <h2 class="intro-block__label" data-reveal="fade-slow">{label}</h2>
+    <p class="intro-block__headline" data-reveal="fade-slow" style="--reveal-delay: 150ms">
+      {headline.split('\n').map((line, i) => (i ? [<br />, line] : line))}
+    </p>
+    {
+      text.length > 0 && (
+        <p class="intro-block__text" data-reveal="fade-slow" style="--reveal-delay: 300ms">
+          {text.map((line, i) => (i ? [<br />, line] : line))}
+        </p>
+      )
+    }
+    {link && <div class="intro-block__link"><ArrowLink href={link.href} label={link.label} /></div>}
+  </div>
+</section>
+
+<style lang="scss">
+  .intro-block {
+    padding-block: $section-space;
+
+    &--top-header {
+      padding-top: calc(#{$header-height} + 2rem);
+    }
+
+    &__label {
+      @include text-label(1.4375rem); // 23px
+    }
+
+    &__headline {
+      @include text-headline;
+      margin-top: 1.25rem;
+      overflow-wrap: anywhere;
+    }
+
+    &__text {
+      @include text-body(0.875rem);
+      margin-top: 1.5rem;
+    }
+
+    &__link {
+      margin-top: 1rem;
+    }
+  }
+</style>

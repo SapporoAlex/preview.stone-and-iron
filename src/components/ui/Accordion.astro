@@ -1,0 +1,152 @@
+---
+// Accordion built on native <details>/<summary> (works without JavaScript).
+// The script adds a smooth open/close height animation and keeps only one
+// item open at a time. Answers may contain simple HTML (links).
+interface Item {
+  question: string;
+  answer: string;
+}
+
+interface Props {
+  items: Item[];
+}
+
+const { items } = Astro.props;
+---
+
+<div class="accordion" data-accordion>
+  {
+    items.map((item) => (
+      <details class="accordion__item">
+        <summary class="accordion__question">
+          <span class="accordion__icon" aria-hidden="true" />
+          <span>{item.question}</span>
+        </summary>
+        <div class="accordion__answer" data-accordion-answer>
+          <div class="accordion__answer-inner" set:html={item.answer} />
+        </div>
+      </details>
+    ))
+  }
+</div>
+
+<script>
+  const DURATION = 350;
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const animate = (el: HTMLElement, from: number, to: number) =>
+    el.animate([{ height: `${from}px` }, { height: `${to}px` }], { duration: DURATION, easing: 'ease' });
+
+  function openItem(item: HTMLDetailsElement) {
+    const answer = item.querySelector<HTMLElement>('[data-accordion-answer]');
+    item.open = true;
+    if (answer && !reduceMotion) animate(answer, 0, answer.scrollHeight);
+  }
+
+  function closeItem(item: HTMLDetailsElement) {
+    const answer = item.querySelector<HTMLElement>('[data-accordion-answer]');
+    if (!answer || reduceMotion) {
+      item.open = false;
+      return;
+    }
+    item.classList.add('is-closing');
+    animate(answer, answer.offsetHeight, 0).onfinish = () => {
+      item.open = false;
+      item.classList.remove('is-closing');
+    };
+  }
+
+  document.querySelectorAll<HTMLElement>('[data-accordion]').forEach((accordion) => {
+    const items = [...accordion.querySelectorAll<HTMLDetailsElement>('details')];
+    items.forEach((item) => {
+      item.querySelector('summary')?.addEventListener('click', (event) => {
+        event.preventDefault();
+        if (item.open && !item.classList.contains('is-closing')) {
+          closeItem(item);
+        } else {
+          items.filter((other) => other !== item && other.open).forEach(closeItem);
+          openItem(item);
+        }
+      });
+    });
+  });
+</script>
+
+<style lang="scss">
+  .accordion {
+    &__item {
+      border-bottom: 1px solid rgba($color-black, 0.12);
+    }
+
+    &__question {
+      display: flex;
+      align-items: center;
+      gap: 0.9rem;
+      padding: 0.9rem 0.25rem;
+      font-family: $font-body;
+      font-weight: 300;
+      font-size: 0.875rem;
+      letter-spacing: 2.1px;
+      cursor: pointer;
+      list-style: none;
+      transition: color $transition-base;
+
+      &::-webkit-details-marker {
+        display: none;
+      }
+
+      &:hover {
+        color: $color-gold;
+      }
+    }
+
+    // Thin plus that turns into a minus when open.
+    &__icon {
+      position: relative;
+      flex-shrink: 0;
+      width: 12px;
+      height: 12px;
+
+      &::before,
+      &::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 0;
+        width: 100%;
+        height: 1px;
+        background: currentColor;
+        transition: transform $transition-base;
+      }
+
+      &::after {
+        transform: rotate(90deg);
+      }
+    }
+
+    &__item[open]:not(.is-closing) &__icon::after {
+      transform: rotate(0deg);
+    }
+
+    &__item[open]:not(.is-closing) &__question {
+      color: $color-gold;
+    }
+
+    &__answer {
+      overflow: hidden;
+    }
+
+    &__answer-inner {
+      padding: 0 0.25rem 1rem 2rem;
+      font-family: $font-body;
+      font-weight: 300;
+      font-size: 0.875rem;
+      line-height: 2;
+      letter-spacing: 1.5px;
+
+      :global(a) {
+        text-decoration: underline;
+      }
+    }
+  }
+</style>

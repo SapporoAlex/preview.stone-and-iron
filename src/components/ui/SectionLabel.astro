@@ -1,0 +1,49 @@
+---
+// Section heading in the site's signature "Label :" style (Crimson Pro),
+// with an optional Japanese subtitle under it.
+//
+// <SectionLabel text="Access :" />
+// <SectionLabel text="Recommendation :" subtitle="オーナーおすすめスポット" />
+interface Props {
+  text: string;
+  subtitle?: string;
+  align?: 'left' | 'center';
+  size?: 'sm' | 'md' | 'lg'; // 23px / 28px / 38px
+  as?: 'h1' | 'h2' | 'h3';
+}
+
+const { text, subtitle, align = 'center', size = 'md', as: Tag = 'h2' } = Astro.props;
+---
+
+<header class:list={['section-label', `section-label--${align}`, `section-label--${size}`]} data-reveal="fade-slow">
+  <Tag class="section-label__text">{text}</Tag>
+  {subtitle && <p class="section-label__subtitle">{subtitle}</p>}
+</header>
+
+<style lang="scss">
+  .section-label {
+    margin-bottom: 2rem;
+
+    &--center {
+      text-align: center;
+    }
+
+    &__text {
+      @include text-label;
+    }
+
+    &--sm &__text {
+      font-size: 1.4375rem;
+    }
+
+    &--lg &__text {
+      font-size: clamp(1.75rem, 3vw, 2.375rem);
+    }
+
+    &__subtitle {
+      @include text-body(1rem);
+      margin-top: 0.75rem;
+      line-height: 2;
+    }
+  }
+</style>

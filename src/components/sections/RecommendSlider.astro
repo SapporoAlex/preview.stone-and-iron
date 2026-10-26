@@ -1,0 +1,21 @@
+---
+// "Recommendation :" block: full-width slider of the owner's favourite spots.
+import SectionLabel from '@components/ui/SectionLabel.astro';
+import Carousel from '@components/ui/Carousel.astro';
+import { recommendedSpots } from '@data/site';
+
+const slides = recommendedSpots.map((s) => ({ image: s.image, title: s.title, subtitle: s.titleJa, url: s.url }));
+---
+
+<section class="recommend">
+  <div class="container">
+    <SectionLabel text="Recommendation :" subtitle="オーナーおすすめスポット" />
+  </div>
+  <Carousel slides={slides} label="オーナーおすすめスポット" height="sm" captions />
+</section>
+
+<style lang="scss">
+  .recommend {
+    padding-top: $section-space-sm;
+  }
+</style>

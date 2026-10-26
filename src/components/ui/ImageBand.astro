@@ -1,0 +1,42 @@
+---
+// Full-width photo strip between sections. On desktop the photo stays
+// fixed while the page scrolls past it (parallax), like the original.
+interface Props {
+  image: string;
+  height?: 'sm' | 'md' | 'lg'; // 277px / 368px / 430px on desktop
+  parallax?: boolean;
+}
+
+const { image, height = 'md', parallax = true } = Astro.props;
+---
+
+<div
+  class:list={['image-band', `image-band--${height}`, { 'image-band--parallax': parallax }]}
+  style={`background-image: url('${image}')`}
+  role="presentation"
+>
+</div>
+
+<style lang="scss">
+  .image-band {
+    width: 100%;
+    background-size: cover;
+    background-position: center;
+
+    &--sm {
+      height: clamp(160px, 20vw, 277px);
+    }
+
+    &--md {
+      height: clamp(200px, 26vw, 368px);
+    }
+
+    &--lg {
+      height: clamp(240px, 32vw, 430px);
+    }
+
+    &--parallax {
+      @include parallax-bg;
+    }
+  }
+</style>

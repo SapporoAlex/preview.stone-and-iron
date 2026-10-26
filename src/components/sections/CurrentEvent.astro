@@ -1,0 +1,53 @@
+---
+// "Current Event :" block: the latest event card, a link to past events,
+// and the "follow us on Instagram" line. The newest event is picked
+// automatically from src/content/events/.
+import { getCollection } from 'astro:content';
+import SectionLabel from '@components/ui/SectionLabel.astro';
+import EventCard from '@components/cards/EventCard.astro';
+import { site } from '@data/site';
+
+const [latest] = (await getCollection('events')).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+---
+
+{
+  latest && (
+    <section class="current-event">
+      <div class="container container--narrow">
+        <SectionLabel text="Current Event :" />
+        <EventCard title={latest.data.title} image={latest.data.image} href={`/event/${latest.id}/`} size="lg" />
+        <p class="current-event__past" data-reveal="fade-slow">
+          <a href="/event/">過去のイベント→</a>
+        </p>
+        <p class="current-event__follow" data-reveal="fade-slow">
+          <a href={site.links.instagram} target="_blank" rel="noopener">最新情報はインスタをフォロー！</a>
+        </p>
+      </div>
+    </section>
+  )
+}
+
+<style lang="scss">
+  .current-event {
+    padding-block: $section-space;
+    text-align: center;
+
+    &__past {
+      @include text-body(1.125rem);
+      margin-top: 1.5rem;
+    }
+
+    &__follow {
+      @include text-body(0.9375rem);
+      margin-top: 1rem;
+    }
+
+    a:hover {
+      color: $color-gold;
+    }
+
+    :global(.event-card) {
+      text-align: left;
+    }
+  }
+</style>

@@ -1,0 +1,160 @@
+---
+// Home page: full-screen background slideshow (crossfade + slow Ken Burns
+// zoom) with the brand name and two links in the middle.
+// Phones get their own portrait images, as on the original.
+import { site } from '@data/site';
+import { heroSlides, heroLinks } from '@data/home';
+
+const count = Math.max(heroSlides.desktop.length, heroSlides.mobile.length);
+---
+
+<section class="hero" data-hero style={`--interval: ${heroSlides.interval}s; --count: ${count}`}>
+  <div class="hero__slides" aria-hidden="true">
+    {
+      Array.from({ length: count }, (_, i) => (
+        <div
+          class:list={['hero__slide', { 'is-active': i === 0 }]}
+          style={`--desktop: url('${heroSlides.desktop[i % heroSlides.desktop.length]}'); --mobile: url('${heroSlides.mobile[i % heroSlides.mobile.length]}')`}
+        />
+      ))
+    }
+  </div>
+
+  <div class="hero__content">
+    <p class="hero__tagline" data-reveal="fade-slow">{site.tagline}</p>
+    <p class="hero__name-ja" data-reveal="fade-slow" style="--reveal-delay: 150ms">{site.shortName}</p>
+    <h1 class="hero__brand" data-reveal="fade-slow" style="--reveal-delay: 300ms">{site.brand}</h1>
+    <p class="hero__strap" data-reveal="fade-slow" style="--reveal-delay: 450ms">{site.strap}</p>
+    <ul class="hero__links" role="list" data-reveal="fade-slow" style="--reveal-delay: 600ms">
+      {heroLinks.map((link) => <li><a class="hero__link" href={link.href}>{link.label}</a></li>)}
+    </ul>
+  </div>
+</section>
+
+<script>
+  // Advance the active slide; the crossfade and zoom are pure CSS.
+  document.querySelectorAll<HTMLElement>('[data-hero]').forEach((hero) => {
+    const slides = [...hero.querySelectorAll<HTMLElement>('.hero__slide')];
+    const seconds = parseFloat(getComputedStyle(hero).getPropertyValue('--interval')) || 6;
+    if (slides.length < 2 || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    let index = 0;
+    window.setInterval(() => {
+      slides[index].classList.remove('is-active');
+      index = (index + 1) % slides.length;
+      slides[index].classList.add('is-active');
+    }, seconds * 1000);
+  });
+</script>
+
+<style lang="scss">
+  .hero {
+    position: relative;
+    display: grid;
+    place-items: center;
+    min-height: 100vh;
+    min-height: 100svh;
+    overflow: hidden;
+    background: $color-black;
+    color: $color-white;
+    text-align: center;
+
+    &__slides {
+      position: absolute;
+      inset: 0;
+    }
+
+    // Each slide fades in over 1s and zooms in slowly while it is shown.
+    &__slide {
+      position: absolute;
+      inset: 0;
+      background-image: var(--mobile);
+      background-size: cover;
+      background-position: center;
+      opacity: 0;
+      transform: scale(1);
+      transition:
+        opacity 1s ease,
+        transform 0s linear 1s; // reset the zoom only after fading out
+
+      @include mq(md) {
+        background-image: var(--desktop);
+      }
+
+      &.is-active {
+        opacity: 1;
+        transform: scale(1.3);
+        transition:
+          opacity 1s ease,
+          transform calc(var(--interval) + 1s) linear;
+      }
+    }
+
+    // Soft darkening so white text stays readable on bright photos.
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba($color-black, 0.15);
+    }
+
+    &__content {
+      position: relative;
+      z-index: 1;
+      padding: 6rem $gutter 3rem;
+    }
+
+    &__tagline {
+      font-family: $font-body;
+      font-weight: 300;
+      font-size: 0.8125rem; // 13px
+      line-height: 1.5;
+      letter-spacing: 2px;
+    }
+
+    &__name-ja {
+      margin-top: 1.25rem;
+      font-family: $font-body;
+      font-weight: 300;
+      font-size: 1.5rem; // 24px
+      line-height: 1;
+      letter-spacing: 3.2px;
+    }
+
+    &__brand {
+      @include text-brand(clamp(1.9rem, 4vw, 2.3125rem)); // 37px
+      margin-top: 1.25rem;
+    }
+
+    &__strap {
+      @include text-strap;
+      margin-top: 0.75rem;
+    }
+
+    &__links {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1.5rem clamp(2rem, 8vw, 7rem);
+      margin: 3rem 0 0;
+    }
+
+    // Link text over a thin underline that turns gold on hover.
+    &__link {
+      display: block;
+      min-width: 200px;
+      padding-bottom: 0.4rem;
+      border-bottom: 1px solid currentColor;
+      font-family: $font-label;
+      font-weight: 300;
+      font-size: 1.6875rem; // 27px
+      line-height: 1;
+      letter-spacing: 2.5px;
+      transition: color $transition-base;
+
+      &:hover,
+      &:focus-visible {
+        color: $color-gold;
+      }
+    }
+  }
+</style>

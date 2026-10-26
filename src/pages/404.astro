@@ -1,0 +1,35 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import ArrowLink from '@components/ui/ArrowLink.astro';
+---
+
+<BaseLayout title="ページが見つかりません">
+  <section class="not-found container container--slim">
+    <p class="not-found__code">404</p>
+    <h1 class="not-found__title">Page not found :</h1>
+    <p class="not-found__text">お探しのページは見つかりませんでした。</p>
+    <ArrowLink href="/" label="Home" align="center" />
+  </section>
+</BaseLayout>
+
+<style lang="scss">
+  .not-found {
+    padding-block: calc(#{$header-height} + 3rem) $section-space;
+    text-align: center;
+
+    &__code {
+      @include text-brand(clamp(3rem, 10vw, 5rem));
+      color: $color-gold;
+    }
+
+    &__title {
+      @include text-label;
+      margin-top: 1.5rem;
+    }
+
+    &__text {
+      @include text-body;
+      margin: 1rem 0 2rem;
+    }
+  }
+</style>

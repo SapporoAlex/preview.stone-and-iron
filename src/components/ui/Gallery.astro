@@ -1,0 +1,205 @@
+---
+// Photo grid with a simple lightbox (click a photo to view it large,
+// arrows / keyboard to move through, Escape or backdrop click to close).
+interface Props {
+  images: string[];
+  label: string; // accessible name, e.g. "館内の写真"
+  columns?: 3 | 4;
+}
+
+const { images, label, columns = 4 } = Astro.props;
+---
+
+<div class:list={['gallery', `gallery--cols-${columns}`]} data-gallery>
+  <ul class="gallery__grid" role="list" aria-label={label}>
+    {
+      images.map((src, i) => (
+        <li>
+          <button class="gallery__thumb" type="button" data-index={i}>
+            <img src={src} alt={`${label} ${i + 1}`} loading="lazy" />
+          </button>
+        </li>
+      ))
+    }
+  </ul>
+
+  <dialog class="gallery__lightbox" aria-label={label} data-lightbox>
+    <img class="gallery__full" src="" alt="" data-lightbox-img />
+    <button class="gallery__nav gallery__nav--prev" type="button" data-lightbox-prev><span class="visually-hidden">前へ</span></button>
+    <button class="gallery__nav gallery__nav--next" type="button" data-lightbox-next><span class="visually-hidden">次へ</span></button>
+    <button class="gallery__close" type="button" data-lightbox-close><span class="visually-hidden">閉じる</span></button>
+  </dialog>
+</div>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-gallery]').forEach((root) => {
+    const thumbs = [...root.querySelectorAll<HTMLButtonElement>('.gallery__thumb')];
+    const dialog = root.querySelector<HTMLDialogElement>('[data-lightbox]');
+    const full = root.querySelector<HTMLImageElement>('[data-lightbox-img]');
+    let index = 0;
+
+    const show = (i: number) => {
+      index = (i + thumbs.length) % thumbs.length;
+      const img = thumbs[index].querySelector('img');
+      if (full && img) {
+        full.src = img.src;
+        full.alt = img.alt;
+      }
+    };
+
+    thumbs.forEach((t) => t.addEventListener('click', () => { show(Number(t.dataset.index)); dialog?.showModal(); }));
+    root.querySelector('[data-lightbox-prev]')?.addEventListener('click', () => show(index - 1));
+    root.querySelector('[data-lightbox-next]')?.addEventListener('click', () => show(index + 1));
+    root.querySelector('[data-lightbox-close]')?.addEventListener('click', () => dialog?.close());
+    dialog?.addEventListener('click', (e) => { if (e.target === dialog) dialog.close(); });
+    dialog?.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') show(index - 1);
+      if (e.key === 'ArrowRight') show(index + 1);
+    });
+  });
+</script>
+
+<style lang="scss">
+  .gallery {
+    &__grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      margin: 0;
+
+      @include mq(md) {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+
+    &--cols-3 &__grid {
+      @include mq(md) {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    &__thumb {
+      display: block;
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      padding: 0;
+      border: 0;
+      overflow: hidden;
+      cursor: zoom-in;
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.6s $ease-out, opacity $transition-base;
+      }
+
+      &:hover img,
+      &:focus-visible img {
+        transform: scale(1.06);
+        opacity: 0.85;
+      }
+    }
+
+    // --- Lightbox ---
+    &__lightbox {
+      width: 100%;
+      max-width: 100%;
+      height: 100%;
+      max-height: 100%;
+      padding: 0;
+      border: 0;
+      background: transparent;
+
+      &::backdrop {
+        background: rgba($color-black, 0.9);
+      }
+
+      &[open] {
+        display: grid;
+        place-items: center;
+        animation: lightbox-in 0.3s ease;
+      }
+    }
+
+    &__full {
+      max-width: min(92vw, 1400px);
+      max-height: 86vh;
+      object-fit: contain;
+    }
+
+    &__nav,
+    &__close {
+      position: fixed;
+      width: 52px;
+      height: 52px;
+      padding: 0;
+      border: 0;
+      background: none;
+      color: rgba($color-white, 0.85);
+
+      &:hover {
+        color: $color-gold;
+      }
+    }
+
+    &__nav {
+      top: 50%;
+      margin-top: -26px;
+
+      &::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 16px;
+        height: 16px;
+        border-top: 2px solid currentColor;
+        border-left: 2px solid currentColor;
+      }
+
+      &--prev {
+        left: 1rem;
+
+        &::before {
+          transform: translate(-30%, -50%) rotate(-45deg);
+        }
+      }
+
+      &--next {
+        right: 1rem;
+
+        &::before {
+          transform: translate(-70%, -50%) rotate(135deg);
+        }
+      }
+    }
+
+    &__close {
+      top: 1rem;
+      right: 1rem;
+
+      &::before,
+      &::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 24px;
+        height: 2px;
+        background: currentColor;
+        transform: translate(-50%, -50%) rotate(45deg);
+      }
+
+      &::after {
+        transform: translate(-50%, -50%) rotate(-45deg);
+      }
+    }
+  }
+
+  @keyframes lightbox-in {
+    from {
+      opacity: 0;
+    }
+  }
+</style>

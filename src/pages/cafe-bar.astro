@@ -1,0 +1,200 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Section from '@components/ui/Section.astro';
+import SectionLabel from '@components/ui/SectionLabel.astro';
+import ImageBand from '@components/ui/ImageBand.astro';
+import Button from '@components/ui/Button.astro';
+import Carousel from '@components/ui/Carousel.astro';
+import Lines from '@components/ui/Lines.astro';
+import CurrentEvent from '@components/sections/CurrentEvent.astro';
+import AccessSection from '@components/sections/AccessSection.astro';
+import { site } from '@data/site';
+import { cafeIntro, openingNote, serviceTimes, space, cafeSlides, ownerChef } from '@data/cafe';
+
+---
+
+<BaseLayout
+  title="Café Bar"
+  description="小樽の100年もの歴史のある石蔵を改装したカフェバー。地元の食材を使った朝食、カフェランチ、夜はバルとして。"
+  image="/images/cafe/hero.jpg"
+  theme="dark"
+  showFaq
+>
+  <div class="cafe-hero" style="background-image: url('/images/cafe/hero.jpg')">
+    <h1 class="cafe-hero__title" data-reveal="fade-slow">Café Bar</h1>
+  </div>
+
+  <Section width="narrow">
+    <p class="cafe-headline" data-reveal="fade-slow">{cafeIntro.headline.split('\n').map((l, i) => (i ? [<br />, l] : l))}</p>
+  </Section>
+
+  <Section width="narrow" spacing="sm" align="center">
+    <SectionLabel text="Eat :" />
+    <p class="cafe-text" data-reveal="fade-slow"><Lines lines={cafeIntro.eat} /></p>
+  </Section>
+
+  <ImageBand image="/images/cafe/band-eat.jpg" height="lg" />
+
+  <Section width="slim">
+    <div class="opening" data-reveal="fade-slow">
+      <p class="opening__title">OPEN</p>
+      <p class="opening__note">
+        日によって異なります。最新情報は<a href={site.links.instagram} target="_blank" rel="noopener">インスタ</a>をご確認ください。
+      </p>
+    </div>
+  </Section>
+
+  <Section width="default" spacing="none">
+    {
+      serviceTimes.map((service) => (
+        <div class="service" data-reveal="fade-slow">
+          <div class="service__text">
+            <h2 class="service__title">{service.title}</h2>
+            <p><Lines lines={service.text} /></p>
+          </div>
+          <p class="service__hours">{service.hours}</p>
+          <img class="service__image" src={service.image} alt="" loading="lazy" />
+        </div>
+      ))
+    }
+  </Section>
+
+  <Section width="narrow" align="center">
+    <SectionLabel text="Space :" />
+    <p class="cafe-text cafe-text--sm" data-reveal="fade-slow"><Lines lines={space} /></p>
+  </Section>
+
+  <Section width="wide" spacing="none" align="center">
+    <div data-reveal="fade-slow">
+      <Carousel slides={cafeSlides.map((image) => ({ image }))} label="店内の写真" />
+    </div>
+    <div class="contact-button">
+      <Button href="/contact/" variant="ghost">Contact</Button>
+    </div>
+  </Section>
+
+  <Section width="default" align="center">
+    <SectionLabel text="Owner Chef :" />
+    <p class="cafe-text cafe-text--sm" data-reveal="fade-slow"><Lines lines={ownerChef} /></p>
+  </Section>
+
+  <ImageBand image="/images/cafe/chef.jpg" height="lg" parallax={false} />
+
+  <CurrentEvent />
+  <AccessSection />
+</BaseLayout>
+
+<style lang="scss">
+  .cafe-hero {
+    display: flex;
+    justify-content: center;
+    height: clamp(360px, 45vw, 630px);
+    padding-top: calc(#{$header-height} + 1rem);
+    background-size: cover;
+    background-position: center;
+
+    &__title {
+      @include text-label(clamp(1.75rem, 3vw, 2.375rem)); // 38px
+    }
+  }
+
+  .cafe-headline {
+    @include text-headline;
+    font-size: clamp(1.4rem, 2.6vw, 2rem); // 32px
+    letter-spacing: 6px;
+
+    @include mq(lg) {
+      padding-left: 3rem;
+    }
+  }
+
+  .cafe-text {
+    @include text-body;
+
+    &--sm {
+      font-size: 0.875rem;
+      line-height: 2.4;
+    }
+  }
+
+  .opening {
+    &__title {
+      font-family: $font-display;
+      font-size: 1.5rem;
+      line-height: 1.1;
+      letter-spacing: 4.8px;
+    }
+
+    &__note {
+      margin-top: 1.25rem;
+      font-family: $font-body;
+      font-weight: 200;
+      font-size: 1.0625rem;
+      line-height: 1.5;
+      letter-spacing: 3.3px;
+
+      a {
+        color: $color-white;
+        text-decoration: underline;
+        text-underline-offset: 4px;
+
+        &:hover {
+          color: $color-gold;
+        }
+      }
+    }
+  }
+
+  // Service row: text | vertical hours with a thin line | photo
+  .service {
+    display: grid;
+    gap: 1.5rem;
+    align-items: center;
+    max-width: 1000px;
+    margin: 0 auto 4rem;
+
+    @include mq(md) {
+      grid-template-columns: 1fr auto 1.4fr;
+      gap: 2rem;
+    }
+
+    &__text {
+      @include text-body(0.875rem);
+      text-align: center;
+    }
+
+    &__title {
+      @include text-label;
+      letter-spacing: 3.3px;
+      margin-bottom: 1rem;
+    }
+
+    // Hours written vertically next to a thin vertical rule (desktop).
+    &__hours {
+      font-family: $font-display;
+      font-size: 1.25rem;
+      line-height: 1.4;
+      letter-spacing: 3.9px;
+      text-align: center;
+
+      @include mq(md) {
+        writing-mode: vertical-rl;
+        align-self: stretch;
+        padding-left: 1rem;
+        border-right: 1px solid currentColor;
+        padding-right: 0.75rem;
+        text-align: start;
+      }
+    }
+
+    &__image {
+      width: 100%;
+      aspect-ratio: 553 / 342;
+      object-fit: cover;
+    }
+  }
+
+  .contact-button {
+    margin: 2.5rem 0 1rem;
+  }
+</style>

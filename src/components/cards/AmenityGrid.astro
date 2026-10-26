@@ -1,0 +1,61 @@
+---
+// Icon + label grid used for "Facility" and "Amenity" on the Stay page.
+import type { Amenity } from '@data/stay';
+
+interface Props {
+  title: string;
+  items: Amenity[];
+}
+
+const { title, items } = Astro.props;
+---
+
+<div class="amenity-grid">
+  <h3 class="amenity-grid__title">{title}</h3>
+  <ul class="amenity-grid__list" role="list">
+    {
+      items.map((item, i) => (
+        <li class="amenity-grid__item" data-reveal="zoom" style={`--reveal-delay: ${i * 60}ms`}>
+          <img src={item.icon} alt="" width="42" height="42" loading="lazy" />
+          <span>{item.label}</span>
+        </li>
+      ))
+    }
+  </ul>
+</div>
+
+<style lang="scss">
+  .amenity-grid {
+    &__title {
+      @include text-list-heading;
+      margin-bottom: 1.5rem;
+    }
+
+    &__list {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.25rem 0.5rem;
+      margin: 0;
+    }
+
+    &__item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.4rem;
+      text-align: center;
+
+      img {
+        width: 42px;
+        height: 42px;
+      }
+
+      span {
+        @include text-small;
+        font-size: 0.8125rem;
+        line-height: 1.4;
+        white-space: pre-line; // labels like "無料\n駐車場" break as on the original
+      }
+    }
+  }
+</style>

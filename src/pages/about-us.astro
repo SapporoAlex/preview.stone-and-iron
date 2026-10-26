@@ -1,0 +1,47 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Section from '@components/ui/Section.astro';
+import SectionLabel from '@components/ui/SectionLabel.astro';
+import ImageBand from '@components/ui/ImageBand.astro';
+import IntroBlock from '@components/sections/IntroBlock.astro';
+import CurrentEvent from '@components/sections/CurrentEvent.astro';
+import AccessSection from '@components/sections/AccessSection.astro';
+import { aboutUs, aboutFeatures } from '@data/about';
+---
+
+<BaseLayout
+  title="About Us"
+  description="当時、北海道屈指の貿易港として栄えていた小樽。約100年前に建てられた石蔵をリノベーションした石と鉄 STONE and IRONについて。"
+  image="/images/about/hero.jpg"
+>
+  <ImageBand image="/images/about/hero.jpg" height="lg" parallax={false} />
+
+  <Section width="wide" align="center">
+    <SectionLabel text="Us :" size="md" />
+    <p class="about-text" data-reveal="fade-slow">
+      {aboutUs.map((line, i) => (i ? [<br />, line] : line))}
+    </p>
+  </Section>
+
+  {
+    aboutFeatures.map((feature) => (
+      <>
+        <ImageBand image={feature.bandImage} height="sm" />
+        <IntroBlock label={feature.label} headline={feature.headline} text={feature.text} link={feature.link} width="slim" />
+      </>
+    ))
+  }
+
+  <ImageBand image="/images/about/band-3.jpg" height="sm" />
+
+  <CurrentEvent />
+  <AccessSection />
+</BaseLayout>
+
+<style lang="scss">
+  .about-text {
+    @include text-body(0.875rem);
+    font-weight: 400;
+    letter-spacing: 1.6px;
+  }
+</style>

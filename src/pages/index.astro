@@ -1,0 +1,10 @@
+---
+// Home: a single full-screen slideshow with the brand and two links
+// (as on the original — no footer on this page).
+import BaseLayout from '@layouts/BaseLayout.astro';
+import HeroSlideshow from '@components/sections/HeroSlideshow.astro';
+---
+
+<BaseLayout showFooter={false}>
+  <HeroSlideshow />
+</BaseLayout>

@@ -1,0 +1,79 @@
+---
+// Button-style link.
+//   variant="olive"   dark olive with white text (booking buttons)
+//   variant="outline" white with a thin black border (Days page)
+//   variant="yellow"  campaign button
+//   variant="ghost"   transparent with a thin border (Café Bar "Contact")
+interface Props {
+  href: string;
+  variant?: 'olive' | 'outline' | 'yellow' | 'ghost';
+  external?: boolean;
+}
+
+const { href, variant = 'olive', external = false } = Astro.props;
+const externalProps = external ? { target: '_blank', rel: 'noopener' } : {};
+---
+
+<a class:list={['button', `button--${variant}`]} href={href} {...externalProps}>
+  <slot />
+</a>
+
+<style lang="scss">
+  .button {
+    display: inline-block;
+    padding: 0.9rem 1.75rem;
+    border: 1px solid transparent;
+    @include text-button;
+    text-align: center;
+    transition:
+      color $transition-base,
+      border-color $transition-base,
+      background $transition-base;
+
+    &--olive {
+      background: $color-olive;
+      color: $color-white;
+
+      &:hover,
+      &:focus-visible {
+        color: $color-gold;
+      }
+    }
+
+    &--outline {
+      background: $color-white;
+      border-color: $color-black;
+      color: $color-black;
+
+      &:hover,
+      &:focus-visible {
+        color: $color-gold;
+        border-color: $color-gold;
+      }
+    }
+
+    &--yellow {
+      background: $color-yellow;
+      color: $color-black;
+      line-height: 1.6;
+
+      &:hover,
+      &:focus-visible {
+        color: $color-white;
+      }
+    }
+
+    &--ghost {
+      border-color: currentColor;
+      font-family: $font-label;
+      font-size: 1.4375rem;
+      letter-spacing: 3.3px;
+      padding: 0.35rem 1.25rem;
+
+      &:hover,
+      &:focus-visible {
+        color: $color-white;
+      }
+    }
+  }
+</style>

@@ -1,0 +1,260 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Section from '@components/ui/Section.astro';
+import SectionLabel from '@components/ui/SectionLabel.astro';
+import ImageBand from '@components/ui/ImageBand.astro';
+import ArrowLink from '@components/ui/ArrowLink.astro';
+import Button from '@components/ui/Button.astro';
+import Carousel from '@components/ui/Carousel.astro';
+import Gallery from '@components/ui/Gallery.astro';
+import AmenityGrid from '@components/cards/AmenityGrid.astro';
+import IntroBlock from '@components/sections/IntroBlock.astro';
+import AccessSection from '@components/sections/AccessSection.astro';
+import { site } from '@data/site';
+import {
+  stayIntro,
+  stayAbout,
+  staySlides,
+  stayRental,
+  stayRooms,
+  facilities,
+  amenities,
+  stayGallery,
+  ownerHost,
+  tourVideo,
+  campaign,
+} from '@data/stay';
+---
+
+<BaseLayout
+  title="Stay"
+  description="築100年の小樽軟石を使った石蔵に泊まる、一棟貸しの宿。最大8名様までご利用いただけます。"
+  image="/images/stay/slides/01.jpg"
+  showBooking
+  showFaq
+>
+  <IntroBlock label={stayIntro.label} headline={stayIntro.headline} text={stayIntro.text} topSpace="header" />
+
+  <!-- Background video band (muted, looping, like the original) -->
+  <div class="video-band" aria-hidden="true">
+    <video autoplay muted loop playsinline preload="metadata" poster="/images/stay/slides/01.jpg">
+      <source src="/video/stay-intro.mp4" type="video/mp4" />
+    </video>
+  </div>
+
+  <Section width="narrow" align="center">
+    <p class="full-video-link"><a href="#introvideo">Full Video ↓</a></p>
+    <SectionLabel text="Stay :" />
+    <p class="stay-about" data-reveal="fade-slow">
+      {stayAbout.map((line, i) => (i ? [<br />, line] : line))}
+    </p>
+  </Section>
+
+  <Section width="wide" spacing="none">
+    <div data-reveal="fade-slow">
+      <Carousel slides={staySlides.map((image) => ({ image }))} label="客室の写真" />
+    </div>
+  </Section>
+
+  <Section width="wide">
+    <div class="rental" data-reveal="fade-slow">
+      <h2 class="rental__title">{stayRental.title}</h2>
+      <p class="rental__text">{stayRental.text}</p>
+      <div class="rental__buttons">
+        <Button href={site.links.booking} external>料金・ご予約はこちら</Button>
+        {campaign.show && <Button href={campaign.href} variant="yellow">{campaign.label}</Button>}
+      </div>
+    </div>
+
+    <hr class="divider" />
+
+    <div class="room-info">
+      <div class="room-info__rooms">
+        {
+          stayRooms.map((group) => (
+            <div class="room-info__group">
+              <h3 class="room-info__heading">{group.heading}</h3>
+              <ul class="room-info__list" role="list">
+                {group.items.map((item) => <li>{item}</li>)}
+              </ul>
+            </div>
+          ))
+        }
+      </div>
+      <AmenityGrid title="Facility" items={facilities} />
+      <AmenityGrid title="Amenity" items={amenities} />
+    </div>
+  </Section>
+
+  <Section width="default" spacing="sm">
+    <Gallery images={stayGallery} label="館内の写真" />
+  </Section>
+
+  <Section width="default">
+    <div class="owner">
+      <div class="owner__text" data-reveal="fade-slow">
+        <SectionLabel text={ownerHost.label} />
+        <p>{ownerHost.text.map((line, i) => (i ? [<br />, line] : line))}</p>
+      </div>
+      <img class="owner__image" src={ownerHost.image} alt="オーナーホスト" loading="lazy" data-reveal="fade-slow" />
+    </div>
+    <div class="center-button">
+      <Button href={site.links.booking} external>料金・ご予約はこちら</Button>
+    </div>
+  </Section>
+
+  <Section width="slim" spacing="sm" align="center">
+    <SectionLabel text="Days :" />
+  </Section>
+  <ImageBand image="/images/stay/days-band.jpg" height="md" />
+  <Section width="narrow" spacing="sm">
+    <ArrowLink href="/days/" label="A Day in Stone and Iron" />
+  </Section>
+
+  <Section id="introvideo" width="wide" align="center">
+    <p class="video-title" data-reveal="fade-slow">{tourVideo.title}</p>
+    <div class="video-embed" data-reveal="fade-slow">
+      <iframe
+        src={`https://www.youtube-nocookie.com/embed/${tourVideo.youtubeId}?rel=0`}
+        title={tourVideo.title}
+        loading="lazy"
+        allow="accelerometer; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen></iframe>
+    </div>
+    <p class="follow"><a href={site.links.instagram} target="_blank" rel="noopener">最新情報はインスタをフォロー！</a></p>
+  </Section>
+
+  <AccessSection />
+</BaseLayout>
+
+<style lang="scss">
+  .video-band {
+    height: clamp(220px, 26vw, 360px);
+    overflow: hidden;
+
+    video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  .full-video-link {
+    @include text-body;
+    margin-bottom: 3rem;
+    text-align: right;
+
+    a:hover {
+      color: $color-gold;
+    }
+  }
+
+  .stay-about {
+    @include text-body;
+  }
+
+  .rental {
+    &__title {
+      @include text-subheading;
+      line-height: 3;
+    }
+
+    &__text {
+      @include text-body;
+      margin-top: 1rem;
+    }
+
+    &__buttons {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+  }
+
+  .divider {
+    margin: 2.5rem 0;
+    border: 0;
+    border-top: 1px solid $color-black;
+  }
+
+  .room-info {
+    display: grid;
+    gap: 3rem;
+
+    @include mq(md) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @include mq(lg) {
+      grid-template-columns: 1fr 1.1fr 1.1fr;
+      gap: 2.5rem;
+    }
+
+    &__group + &__group {
+      margin-top: 2rem;
+    }
+
+    &__heading {
+      @include text-list-heading;
+      margin-bottom: 1rem;
+    }
+
+    &__list {
+      @include text-small;
+      line-height: 1.7;
+      margin: 0;
+    }
+  }
+
+  .owner {
+    display: grid;
+    gap: 2.5rem;
+    align-items: center;
+
+    @include mq(md) {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    &__text {
+      @include text-body(0.875rem);
+      text-align: center;
+    }
+
+    &__image {
+      width: 100%;
+      aspect-ratio: 580 / 303;
+      object-fit: cover;
+    }
+  }
+
+  .center-button {
+    margin-top: 3rem;
+    text-align: center;
+  }
+
+  .video-title {
+    @include text-body(1rem);
+    margin-bottom: 1.5rem;
+  }
+
+  .video-embed {
+    aspect-ratio: 16 / 9;
+
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+  }
+
+  .follow {
+    @include text-body(0.875rem);
+    margin-top: 2rem;
+
+    a:hover {
+      color: $color-gold;
+    }
+  }
+</style>

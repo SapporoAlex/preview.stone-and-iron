@@ -1,0 +1,113 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Section from '@components/ui/Section.astro';
+import SectionLabel from '@components/ui/SectionLabel.astro';
+import ImageBand from '@components/ui/ImageBand.astro';
+import Button from '@components/ui/Button.astro';
+import IntroBlock from '@components/sections/IntroBlock.astro';
+import RecommendSlider from '@components/sections/RecommendSlider.astro';
+import AccessSection from '@components/sections/AccessSection.astro';
+import { site } from '@data/site';
+import { daysIntro, dayIntro, timeline } from '@data/days';
+---
+
+<BaseLayout
+  title="Days"
+  description="バリスタが淹れるコーヒーからスタートする、石と鉄での特別な一日。小樽での過ごし方をご紹介します。"
+  image="/images/days/hero.jpg"
+>
+  <IntroBlock label={daysIntro.label} headline={daysIntro.headline} text={daysIntro.text} topSpace="header" />
+
+  <ImageBand image="/images/days/hero.jpg" height="md" />
+
+  <Section width="slim" align="center">
+    <SectionLabel text="Day :" subtitle={dayIntro.join('\n')} />
+  </Section>
+
+  <!-- Timeline: time label + photo running to the right edge + caption -->
+  <ol class="timeline" role="list">
+    {
+      timeline.map((entry) => (
+        <li class="timeline__entry" data-reveal="fade-slow">
+          <h2 class="timeline__time">{entry.time}</h2>
+          <div class="timeline__image" style={`background-image: url('${entry.image}')`} role="presentation" />
+          <p class="timeline__text">{entry.text}</p>
+        </li>
+      ))
+    }
+  </ol>
+
+  <Section width="narrow" spacing="sm">
+    <div class="days-buttons">
+      <Button href="/stay/" variant="outline">お部屋の紹介</Button>
+      <Button href={site.links.booking} variant="outline" external>料金・ご予約はこちら</Button>
+    </div>
+  </Section>
+
+  <RecommendSlider />
+
+  <Section width="wide" spacing="sm" align="center">
+    <p class="follow"><a href={site.links.instagram} target="_blank" rel="noopener">最新情報はインスタをフォロー！</a></p>
+  </Section>
+
+  <AccessSection />
+</BaseLayout>
+
+<style lang="scss">
+  // On desktop the entries start ~30% from the left and the photo runs to
+  // the right edge of the screen, as on the original.
+  .timeline {
+    margin: 0;
+    padding: 0 $gutter;
+
+    @include mq(lg) {
+      padding: 0 0 0 30%;
+    }
+
+    &__entry {
+      margin-bottom: clamp(3rem, 6vw, 4.5rem);
+    }
+
+    &__time {
+      @include text-time;
+      margin-bottom: 1.25rem;
+    }
+
+    &__image {
+      height: clamp(200px, 26vw, 360px);
+      background-size: cover;
+      background-position: center;
+    }
+
+    &__text {
+      @include text-body;
+      margin-top: 1rem;
+      line-height: 2.4;
+      white-space: pre-line;
+
+      @include mq(lg) {
+        padding-right: 20%;
+      }
+    }
+  }
+
+  .days-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1.5rem;
+  }
+
+  .follow {
+    @include text-body(0.875rem);
+
+    a:hover {
+      color: $color-gold;
+    }
+  }
+
+  // Subtitle has two lines separated by \n
+  :global(.section-label__subtitle) {
+    white-space: pre-line;
+  }
+</style>

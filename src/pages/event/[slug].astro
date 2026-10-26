@@ -1,0 +1,17 @@
+---
+// One page per event: /event/<file-name>/ for each file in src/content/events/.
+import { getCollection, render } from 'astro:content';
+import ArticleLayout from '@layouts/ArticleLayout.astro';
+
+export async function getStaticPaths() {
+  const events = await getCollection('events');
+  return events.map((event) => ({ params: { slug: event.id }, props: { event } }));
+}
+
+const { event } = Astro.props;
+const { Content } = await render(event);
+---
+
+<ArticleLayout title={event.data.title} image={event.data.image} date={event.data.date}>
+  <Content />
+</ArticleLayout>

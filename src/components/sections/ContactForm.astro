@@ -1,0 +1,166 @@
+---
+// Contact form. Submits to /api/contact.php (see public/api/).
+//
+// - Without JavaScript: a normal POST; PHP redirects back to
+//   /contact/?status=success (or ?status=error) and the message shows.
+// - With JavaScript: submitted with fetch() and the result is shown inline.
+//
+// Field `name` attributes must match the keys read in public/api/contact.php.
+// Required fields (as on the original): name, email, email confirmation.
+interface Props {
+  action?: string;
+}
+
+const { action = '/api/contact.php' } = Astro.props;
+---
+
+<div class="contact-form" id="contact-form" data-reveal="fade-slow">
+  <div class="contact-form__status" role="status" aria-live="polite" data-form-status hidden></div>
+
+  <form class="contact-form__form" method="post" action={action} novalidate data-contact-form>
+    <div class="contact-form__field">
+      <label for="cf-name">名前 <span class="contact-form__req" aria-hidden="true">*</span></label>
+      <input id="cf-name" name="name" type="text" autocomplete="name" maxlength="200" required />
+    </div>
+
+    <div class="contact-form__field">
+      <label for="cf-phone">電話番号</label>
+      <input id="cf-phone" name="phone" type="tel" autocomplete="tel" maxlength="40" />
+    </div>
+
+    <div class="contact-form__field">
+      <label for="cf-email">メールアドレス <span class="contact-form__req" aria-hidden="true">*</span></label>
+      <input id="cf-email" name="email" type="email" autocomplete="email" maxlength="200" required />
+    </div>
+
+    <div class="contact-form__field">
+      <label for="cf-email-confirm">*確認用メールアドレス</label>
+      <input id="cf-email-confirm" name="email_confirm" type="email" autocomplete="off" maxlength="200" required />
+    </div>
+
+    <div class="contact-form__field">
+      <label for="cf-message">お問い合わせ内容</label>
+      <textarea id="cf-message" name="message" rows="4" maxlength="5000"></textarea>
+    </div>
+
+    <!-- Spam protection: real users never see or fill this field. -->
+    <div class="contact-form__trap" aria-hidden="true">
+      <label for="cf-website">Website</label>
+      <input id="cf-website" name="website" type="text" tabindex="-1" autocomplete="off" />
+    </div>
+    <input type="hidden" name="form_started" value="" data-form-started />
+
+    <button class="contact-form__submit" type="submit" data-form-submit>Send→</button>
+  </form>
+</div>
+
+<script>
+  import { initContactForm } from '../../scripts/contact-form';
+  initContactForm();
+</script>
+
+<style lang="scss">
+  .contact-form {
+    &__form {
+      display: grid;
+      gap: 1rem;
+    }
+
+    &__field {
+      display: flex;
+      flex-direction: column;
+
+      label {
+        font-family: $font-body;
+        font-weight: 300;
+        font-size: 1rem;
+        line-height: 3;
+        letter-spacing: 2.1px;
+      }
+
+      input,
+      textarea {
+        width: 100%;
+        padding: 0.55rem 0.75rem;
+        background: $color-white;
+        border: 1px solid #818a91;
+        border-radius: 0;
+        font-family: $font-body;
+        font-weight: 300;
+        font-size: 0.9375rem;
+        letter-spacing: 1px;
+        color: $color-black;
+        transition: border-color $transition-base;
+
+        &:focus {
+          outline: none;
+          border-color: $color-gold;
+        }
+
+        &[aria-invalid='true'] {
+          border-color: #cf2e2e;
+        }
+      }
+
+      textarea {
+        resize: vertical;
+        min-height: 110px;
+      }
+    }
+
+    &__req {
+      color: inherit;
+    }
+
+    // Error messages are inserted by JavaScript, so they need a global selector.
+    :global(.contact-form__error) {
+      margin-top: 0.35rem;
+      font-size: 0.8rem;
+      line-height: 1.5;
+      color: #cf2e2e;
+    }
+
+    &__trap {
+      @include visually-hidden;
+    }
+
+    // "Send→" text button (Crimson Text 24px)
+    &__submit {
+      justify-self: center;
+      margin-top: 0.75rem;
+      padding: 0.5rem 1rem;
+      background: none;
+      border: 0;
+      font-family: $font-display;
+      font-size: 1.5rem;
+      line-height: 1;
+      letter-spacing: 1.8px;
+      color: $color-black;
+      transition: color $transition-base;
+
+      &:hover,
+      &:focus-visible {
+        color: $color-gold;
+      }
+
+      &:disabled {
+        opacity: 0.5;
+        cursor: wait;
+      }
+    }
+
+    &__status {
+      margin-bottom: 1.5rem;
+      padding: 1rem 1.25rem;
+      font-size: 0.9rem;
+      line-height: 1.8;
+      border-left: 3px solid $color-gold;
+      background: rgba($color-gold, 0.1);
+
+      &.is-error {
+        border-color: #cf2e2e;
+        background: rgba(#cf2e2e, 0.08);
+      }
+    }
+  }
+</style>

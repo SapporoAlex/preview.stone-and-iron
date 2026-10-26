@@ -1,0 +1,13 @@
+---
+// Renders an array of text lines separated by <br> — the original site
+// breaks most Japanese copy into short lines.
+//
+// <p><Lines lines={['一行目', '二行目']} /></p>
+interface Props {
+  lines: string[];
+}
+
+const { lines } = Astro.props;
+---
+
+{lines.map((line, i) => (i ? [<br />, line] : line))}

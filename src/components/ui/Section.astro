@@ -1,0 +1,58 @@
+---
+// Generic page section: vertical spacing + content width.
+//
+// <Section width="slim" spacing="sm"> ... </Section>
+// Backgrounds come from the page theme (white, or night on Café Bar);
+// use background="grey" for the light grey variant.
+interface Props {
+  id?: string;
+  width?: 'default' | 'wide' | 'narrow' | 'slim' | 'full';
+  spacing?: 'default' | 'sm' | 'none';
+  background?: 'none' | 'grey';
+  align?: 'left' | 'center';
+  class?: string;
+}
+
+const { id, width = 'default', spacing = 'default', background = 'none', align = 'left', class: className } = Astro.props;
+---
+
+<section
+  id={id}
+  class:list={['section', `section--space-${spacing}`, `section--bg-${background}`, `section--${align}`, className]}
+>
+  {
+    width === 'full' ? (
+      <slot />
+    ) : (
+      <div class:list={['container', { [`container--${width}`]: width !== 'default' }]}>
+        <slot />
+      </div>
+    )
+  }
+</section>
+
+<style lang="scss">
+  .section {
+    position: relative;
+
+    &--space-default {
+      padding-block: $section-space;
+    }
+
+    &--space-sm {
+      padding-block: $section-space-sm;
+    }
+
+    &--space-none {
+      padding-block: 0;
+    }
+
+    &--bg-grey {
+      background: $color-grey-light;
+    }
+
+    &--center {
+      text-align: center;
+    }
+  }
+</style>

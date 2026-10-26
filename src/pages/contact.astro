@@ -1,0 +1,19 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import SectionLabel from '@components/ui/SectionLabel.astro';
+import ContactForm from '@components/sections/ContactForm.astro';
+---
+
+<BaseLayout title="Contact" description="石と鉄 STONE and IRON へのご予約・お問い合わせはこちらのフォームから。">
+  <section class="contact container container--slim">
+    <SectionLabel text="Contact :" subtitle="ご予約/お問い合わせ" as="h1" />
+    <ContactForm />
+  </section>
+</BaseLayout>
+
+<style lang="scss">
+  .contact {
+    max-width: calc(538px + #{$gutter * 2});
+    padding-block: calc(#{$header-height} + 1rem) $section-space;
+  }
+</style>

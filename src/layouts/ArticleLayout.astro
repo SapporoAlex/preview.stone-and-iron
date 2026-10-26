@@ -1,0 +1,104 @@
+---
+// Layout for Markdown pages (e.g. src/pages/doumin-plan.md) and event posts.
+// Frontmatter: title, description?, image? (shown under the text).
+import BaseLayout from './BaseLayout.astro';
+
+interface Props {
+  frontmatter?: { title: string; description?: string; image?: string };
+  title?: string;
+  description?: string;
+  image?: string;
+  date?: Date;
+}
+
+const fm = Astro.props.frontmatter ?? Astro.props;
+const { title = '', description, image } = fm;
+const { date } = Astro.props;
+---
+
+<BaseLayout title={title} description={description} image={image}>
+  <article class="article container">
+    <header class="article__header" data-reveal="fade">
+      {date && <time class="article__date" datetime={date.toISOString()}>{date.toLocaleDateString('ja-JP')}</time>}
+      <h1 class="article__title">{title}</h1>
+    </header>
+    <div class="article__body" data-reveal="fade">
+      <slot />
+    </div>
+    {image && <img class="article__image" src={image} alt="" loading="lazy" data-reveal="fade" />}
+  </article>
+</BaseLayout>
+
+<style lang="scss">
+  .article {
+    max-width: calc(#{$container-narrow} + #{$gutter * 2});
+    padding-block: calc(#{$header-height} + 1.5rem) $section-space;
+
+    &__date {
+      @include text-small;
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+
+    &__title {
+      @include text-subheading(clamp(1.5rem, 3vw, 2rem));
+      margin-bottom: 2rem;
+    }
+
+    &__image {
+      width: 100%;
+      max-width: 560px;
+      margin-top: 2.5rem;
+    }
+
+    // Markdown output is plain HTML, so it is styled with :global().
+    &__body {
+      @include text-body(0.9375rem);
+      line-height: 2;
+
+      :global(p),
+      :global(ul),
+      :global(table) {
+        margin-bottom: 1.5em;
+      }
+
+      // Single line breaks in the Markdown stay as line breaks.
+      :global(p) {
+        white-space: pre-line;
+      }
+
+      :global(h3) {
+        @include text-subheading(1.125rem);
+        margin: 2.5em 0 1em;
+      }
+
+      :global(ul) {
+        padding-left: 1.25em;
+      }
+
+      :global(a) {
+        text-decoration: underline;
+        text-underline-offset: 3px;
+      }
+
+      :global(a:hover) {
+        color: $color-gold;
+      }
+
+      :global(table) {
+        border-collapse: collapse;
+      }
+
+      :global(td),
+      :global(th) {
+        padding: 0.25em 1.5em 0.25em 0;
+        text-align: left;
+        font-weight: 300;
+      }
+
+      :global(.note-red) {
+        color: #cf2e2e;
+      }
+    }
+  }
+</style>
